@@ -3,7 +3,7 @@
 	Appointment: Класс для отправки почты
 				 через SMTP протокол
 	File: Smtp.php
-	Author: Anton Kuliashou
+	Author: Anton Kuleshov
 	Site: http://falbar.ru/
 ===========================================*/
 
