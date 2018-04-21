@@ -22,6 +22,6 @@ $result = $obj->send(
 );
 ```
 
-#Статья
+# Статья
 
 [SMTP сервер для отправки писем с сайта если функция mail не работает](http://falbar.ru/article/smtp-server-dlya-otpravki-pisem-s-sajta-esli-funktsiya-mail-ne-rabotaet)
