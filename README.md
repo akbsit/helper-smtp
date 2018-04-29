@@ -8,7 +8,7 @@ $oSmtp = new Smtp([
     "mailpass" => "*********", // string Пароль почты
     "from" => "Фалбар", // string Заголовок от кого
     "host" => "ssl://smtp.yandex.ru", // string Адрес почтового сервера
-    "port" => 465 // Порт
+    "port" => 465 // int Порт
 ]);
 ```
 
