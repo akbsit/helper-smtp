@@ -4,11 +4,11 @@
 
 ```php
 $oSmtp = new Smtp([
-    "maillogin" => "noreply@falbar.ru",
-    "mailpass" => "*********",
-    "from" => "Фалбар",
-    "host" => "ssl://smtp.yandex.ru",
-    "port" => 465
+    "maillogin" => "noreply@falbar.ru", // string Почта с которой отправляем письмо
+    "mailpass" => "*********", // string Пароль почты
+    "from" => "Фалбар", // string Заголовок от кого
+    "host" => "ssl://smtp.yandex.ru", // string Адрес почтового сервера
+    "port" => 465 // Порт
 ]);
 ```
 
@@ -16,9 +16,9 @@ $oSmtp = new Smtp([
 
 ```php
 $bStatus = $oSmtp->send(
-    "akbsit@yandex.ru",
-    "Заголовок письма",
-    "Текст письма"
+    "akbsit@yandex.ru", // string Почта на которую отправляем письмо
+    "Заголовок письма", // string Заголовок письма
+    "Текст письма" // string Текст письма
 );
 ```
 

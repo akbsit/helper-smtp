@@ -9,137 +9,137 @@ class Smtp
     /**
      * @var array
      */
-    private $settings = [];
+    private $arSettings = [];
 
     /**
      * @var array
      */
-    public $error = [
+    public $arError = [
         "status" => false
     ];
 
     /**
      * Smtp constructor.
-     * @param $settings
+     * @param $arSettings
      */
-    public function __construct($settings)
+    public function __construct($arSettings)
     {
         try {
-            if (isset($settings["maillogin"],
-                    $settings["mailpass"],
-                    $settings["from"],
-                    $settings["host"])
-                && !empty($settings["maillogin"])
-                && !empty($settings["mailpass"])
-                && !empty($settings["from"])
-                && !empty($settings["host"])) {
-                $this->settings = $settings;
+            if (isset($arSettings["maillogin"],
+                    $arSettings["mailpass"],
+                    $arSettings["from"],
+                    $arSettings["host"])
+                && !empty($arSettings["maillogin"])
+                && !empty($arSettings["mailpass"])
+                && !empty($arSettings["from"])
+                && !empty($arSettings["host"])) {
+                $this->arSettings = $arSettings;
             } else {
                 throw new Exception("Init error");
             }
 
-            if (!isset($settings["port"]) || empty($settings["port"])) {
-                $this->settings["port"] = 25;
+            if (!isset($arSettings["port"]) || empty($arSettings["port"])) {
+                $this->arSettings["port"] = 25;
             }
 
-            if (!isset($settings["charset"]) || empty($settings["charset"])) {
-                $this->settings["charset"] = "utf-8";
+            if (!isset($arSettings["charset"]) || empty($arSettings["charset"])) {
+                $this->arSettings["charset"] = "utf-8";
             }
 
-            if (!isset($settings["rpvalid"]["mail"]) || empty($settings["rpvalid"]["mail"])) {
-                $this->settings["rpvalid"]["mail"] = "/^[a-z0-9_][a-z0-9\._-]*@([a-z0-9]+([a-z0-9-]*[a-z0-9]+)*\.)+[a-z]+$/i";
+            if (!isset($arSettings["rpvalid"]["mail"]) || empty($arSettings["rpvalid"]["mail"])) {
+                $this->arSettings["rpvalid"]["mail"] = "/^[a-z0-9_][a-z0-9\._-]*@([a-z0-9]+([a-z0-9-]*[a-z0-9]+)*\.)+[a-z]+$/i";
             }
         } catch (Exception $e) {
-            $this->error["status"] = true;
-            $this->error["message"] = $e->getMessage();
-            $this->error["file"] = $e->getFile();
-            $this->error["line"] = $e->getLine();
+            $this->arError["status"] = true;
+            $this->arError["message"] = $e->getMessage();
+            $this->arError["file"] = $e->getFile();
+            $this->arError["line"] = $e->getLine();
         }
     }
 
     /**
-     * @param $mail
-     * @param string $subject
-     * @param string $message
+     * @param $sMail
+     * @param string $sSubject
+     * @param string $sMessage
      * @return bool
      */
-    public function send($mail, $subject = "", $message = "")
+    public function send($sMail, $sSubject = "", $sMessage = "")
     {
-        if (!$this->error["status"]) {
+        if (!$this->arError["status"]) {
             try {
-                if (!preg_match($this->settings["rpvalid"]["mail"], $mail)) {
-                    throw new Exception("Mail error: " . $mail . " not valid");
+                if (!preg_match($this->arSettings["rpvalid"]["mail"], $sMail)) {
+                    throw new Exception("Mail error: " . $sMail . " not valid");
                 }
 
                 $sendContent = "Date: " . date("D, d M Y H:i:s") . " UT\r\n";
-                $sendContent .= "Subject: =?" . $this->settings["charset"] . "?B?" . base64_encode($subject) . "=?=\r\n";
+                $sendContent .= "Subject: =?" . $this->arSettings["charset"] . "?B?" . base64_encode($sSubject) . "=?=\r\n";
                 $sendContent .= "MIME-Version: 1.0\r\n";
-                $sendContent .= "Content-type: text/html; charset=" . $this->settings["charset"] . "\r\n";
-                $sendContent .= "From: =?" . $this->settings["charset"] . "?Q?" . str_replace("+", "_", str_replace("%", "=", urlencode($this->settings["from"]))) . "?= <" . $this->settings["maillogin"] . ">\r\n";
-                $sendContent .= "To: <" . $mail . ">\r\n";
+                $sendContent .= "Content-type: text/html; charset=" . $this->arSettings["charset"] . "\r\n";
+                $sendContent .= "From: =?" . $this->arSettings["charset"] . "?Q?" . str_replace("+", "_", str_replace("%", "=", urlencode($this->arSettings["from"]))) . "?= <" . $this->arSettings["maillogin"] . ">\r\n";
+                $sendContent .= "To: <" . $sMail . ">\r\n";
                 $sendContent .= "\r\n";
-                $sendContent .= $message . "\r\n";
+                $sendContent .= $sMessage . "\r\n";
 
-                $connection = @fsockopen($this->settings["host"], $this->settings["port"], $errno, $errstr, 30);
+                $rConnection = @fsockopen($this->arSettings["host"], $this->arSettings["port"], $errno, $errstr, 30);
 
-                if (!$connection) {
+                if (!$rConnection) {
                     throw new Exception("Connection error level 1");
                 }
 
-                if (!$this->getData($connection, "220")) {
+                if (!$this->getData($rConnection, "220")) {
                     throw new Exception("Connection error level 2");
                 }
 
-                fputs($connection, "HELO " . $_SERVER["SERVER_NAME"] . "\r\n");
-                if (!$this->getData($connection, "250")) {
+                fputs($rConnection, "HELO " . $_SERVER["SERVER_NAME"] . "\r\n");
+                if (!$this->getData($rConnection, "250")) {
                     throw new Exception("Error command: HELO");
                 }
 
-                fputs($connection, "AUTH LOGIN\r\n");
-                if (!$this->getData($connection, "334")) {
+                fputs($rConnection, "AUTH LOGIN\r\n");
+                if (!$this->getData($rConnection, "334")) {
                     throw new Exception("Autorization error command: AUTH LOGIN");
                 }
 
-                fputs($connection, base64_encode($this->settings["maillogin"]) . "\r\n");
-                if (!$this->getData($connection, "334")) {
+                fputs($rConnection, base64_encode($this->arSettings["maillogin"]) . "\r\n");
+                if (!$this->getData($rConnection, "334")) {
                     throw new Exception("Autorization error: login");
                 }
 
-                fputs($connection, base64_encode($this->settings["mailpass"]) . "\r\n");
-                if (!$this->getData($connection, "235")) {
+                fputs($rConnection, base64_encode($this->arSettings["mailpass"]) . "\r\n");
+                if (!$this->getData($rConnection, "235")) {
                     throw new Exception("Autorization error: password");
                 }
 
-                fputs($connection, "MAIL FROM: <" . $this->settings["maillogin"] . ">\r\n");
-                if (!$this->getData($connection, "250")) {
+                fputs($rConnection, "MAIL FROM: <" . $this->arSettings["maillogin"] . ">\r\n");
+                if (!$this->getData($rConnection, "250")) {
                     throw new Exception("Error command: MAIL FROM");
                 }
 
-                fputs($connection, "RCPT TO: <" . $mail . ">\r\n");
-                if (!$this->getData($connection, "250")) {
+                fputs($rConnection, "RCPT TO: <" . $sMail . ">\r\n");
+                if (!$this->getData($rConnection, "250")) {
                     throw new Exception("Error command: RCPT TO");
                 }
 
-                fputs($connection, "DATA\r\n");
-                if (!$this->getData($connection, "354")) {
+                fputs($rConnection, "DATA\r\n");
+                if (!$this->getData($rConnection, "354")) {
                     throw new Exception("Error command: DATA");
                 }
 
-                fputs($connection, $sendContent . "\r\n.\r\n");
-                if (!$this->getData($connection, "250")) {
+                fputs($rConnection, $sendContent . "\r\n.\r\n");
+                if (!$this->getData($rConnection, "250")) {
                     throw new Exception("Error: mail didn't sent");
                 }
 
-                fputs($connection, "QUIT\r\n");
+                fputs($rConnection, "QUIT\r\n");
 
-                fclose($connection);
+                fclose($rConnection);
 
                 return true;
             } catch (Exception $e) {
-                $this->error["status"] = true;
-                $this->error["message"] = $e->getMessage();
-                $this->error["file"] = $e->getFile();
-                $this->error["line"] = $e->getLine();
+                $this->arError["status"] = true;
+                $this->arError["message"] = $e->getMessage();
+                $this->arError["file"] = $e->getFile();
+                $this->arError["line"] = $e->getLine();
             }
         }
 
@@ -147,19 +147,19 @@ class Smtp
     }
 
     /**
-     * @param $connection
-     * @param $response
+     * @param $rConnection
+     * @param $sResponse
      * @return bool
      */
-    private function getData($connection, $response)
+    private function getData($rConnection, $sResponse)
     {
-        while (@substr($responseServer, 3, 1) != " ") {
-            if (!($responseServer = fgets($connection, 256))) {
+        while (@substr($sResponseServer, 3, 1) != " ") {
+            if (!($sResponseServer = fgets($rConnection, 256))) {
                 return false;
             }
         }
 
-        if (!(substr($responseServer, 0, 3) == $response)) {
+        if (!(substr($sResponseServer, 0, 3) == $sResponse)) {
             return false;
         }
 
