@@ -3,7 +3,7 @@
 Создаем объект Smtp класса, передав настройки подключения в конструктор:
 
 ```php
-$obj = new Smtp([
+$oSmtp = new Smtp([
     "maillogin" => "noreply@falbar.ru",
     "mailpass" => "*********",
     "from" => "Фалбар",
@@ -15,12 +15,14 @@ $obj = new Smtp([
 Отправляем письмо:
 
 ```php
-$result = $obj->send(
+$bStatus = $oSmtp->send(
     "akbsit@yandex.ru",
     "Заголовок письма",
     "Текст письма"
 );
 ```
+
+При успешной отработке возвращает – **true** свойств в другом случае – **false**.
 
 # Статья
 
