@@ -1,29 +1,25 @@
-# Smtp
+# helper-smtp, [Packagist](https://packagist.org/packages/akbsit/helper-smtp)
 
-Создаем объект Smtp класса, передав настройки подключения в конструктор:
+Creating an Smtp class object by passing the connection settings to the constructor:
 
 ```php
-$oSmtp = new Smtp([
-    "maillogin" => "noreply@falbar.ru", // string Почта с которой отправляем письмо
-    "mailpass" => "*********", // string Пароль почты
-    "from" => "Фалбар", // string Заголовок от кого
-    "host" => "ssl://smtp.yandex.ru", // string Адрес почтового сервера
-    "port" => 465 // int Порт
+$oSmtpHelper = new SmtpHelper([
+    'maillogin' => 'noreply@falbar.ru',
+    'mailpass'  => '*********',
+    'from'      => 'Falbar',
+    'host'      => 'ssl://smtp.yandex.ru', 
+    'port'      => 465
 ]);
 ```
 
-Отправляем письмо:
+Send Email:
 
 ```php
-$bStatus = $oSmtp->send(
-    "akbsit@yandex.ru", // string Почта на которую отправляем письмо
-    "Заголовок письма", // string Заголовок письма
-    "Текст письма" // string Текст письма
+$bStatus = $oSmtpHelper->send(
+    'akbsit@yandex.ru',
+    'Mail title',
+    'Mail text'
 );
 ```
 
-При успешной отработке возвращает – **true** в другом случае – **false**.
-
-# Статья
-
-[SMTP сервер для отправки писем с сайта если функция mail не работает](http://falbar.ru/article/smtp-server-dlya-otpravki-pisem-s-sajta-esli-funktsiya-mail-ne-rabotaet)
+If successful, it returns – **true** in another case – **false**.
